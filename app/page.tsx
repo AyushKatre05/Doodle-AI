@@ -6,7 +6,6 @@ import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { Brush, Eraser } from 'lucide-react'; 
-// import { ModeToggle } from '@/components/ui/modeToggle';
 
 const SWATCHES = [
   "#000000", "#ee3333", "#e64980", "#be4bdb",
@@ -222,7 +221,6 @@ export default function Home() {
         <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
           <h1 className="text-4xl font-bold">Drawing & Calculation Tool</h1>
           <p className="text-lg mt-2 md:mt-0">Create drawings, perform calculations, and see results instantly!</p>
-          {/* <ModeToggle/> */}
         </div>
       </motion.header>
 

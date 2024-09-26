@@ -5,15 +5,18 @@ import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { Brush, Eraser } from 'lucide-react'; 
+
 const SWATCHES = [
   "#000000", "#ee3333", "#e64980", "#be4bdb",
   "#893200", "#228be6", "#3333ee", "#40c057", "#00aa00",
   "#fab005", "#fd7e14",
 ];
+
 interface GeneratedResult {
   expression: string;
   answer: string;
 }
+
 interface Response {
   expr: string;
   result: string;
@@ -32,6 +35,7 @@ export default function Home() {
   const [latexPosition, setLatexPosition] = useState({ x: 10, y: 200 });
   const [latexExpression, setLatexExpression] = useState<Array<string>>([]);
   const [eraserActive, setEraserActive] = useState(false); // Track eraser state
+
   useEffect(() => {
     const canvas = canvasRef.current;
     const setCanvasSize = () => {
@@ -48,6 +52,7 @@ export default function Home() {
       window.removeEventListener('resize', setCanvasSize);
     };
   }, []);
+
   useEffect(() => {
     const script = document.createElement('script');
     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-MML-AM_CHTML';
@@ -67,11 +72,13 @@ export default function Home() {
       document.head.removeChild(script);
     };
   }, [latexExpression]);
+
   useEffect(() => {
     if (result) {
       renderLatexToCanvas(result.expression, result.answer);
     }
   }, [result]);
+
   useEffect(() => {
     if (reset) {
       resetCanvas();
@@ -81,6 +88,7 @@ export default function Home() {
       setReset(false);
     }
   }, [reset]);
+
   const renderLatexToCanvas = (expression: string, answer: string) => {
     const latex = `\\(\\LARGE{${expression} = ${answer}}\\)`;
     setLatexExpression([...latexExpression, latex]);
@@ -92,6 +100,7 @@ export default function Home() {
       }
     }
   };
+
   const resetCanvas = () => {
     const canvas = canvasRef.current;
     if (canvas) {
@@ -101,6 +110,7 @@ export default function Home() {
       }
     }
   };
+
   const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     if (canvas) {
@@ -116,6 +126,7 @@ export default function Home() {
       }
     }
   };
+
   const draw = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!isDrawing) return;
     const canvas = canvasRef.current;
@@ -127,9 +138,11 @@ export default function Home() {
       }
     }
   };
+
   const stopDrawing = () => {
     setIsDrawing(false);
   };
+
   const runRoute = async () => {
     try {
       const canvas = canvasRef.current;
@@ -183,6 +196,7 @@ export default function Home() {
       console.error("Error running route:", error);
     }
   };
+
   return (
     <div className="relative min-h-screen bg-gray-100">
       {/* Header */}
@@ -220,112 +234,95 @@ export default function Home() {
                       setColor(swatch);
                       setEraserActive(false); 
                     }}
-                    style={{                     cursor: 'pointer', border: `2px solid ${color === swatch ? '#000' : '#fff'}` }}
-                    className="rounded-full h-12 w-12 flex items-center justify-center shadow-md transition-transform transform hover:scale-105"
+                    style={{ cursor: 'pointer', border: `2px solid ${color === swatch ? '#000' : '#fff'}` }}
+                    className="rounded-full h-12 w-12 flex items-center justify-center"
                   >
-                    <div
-                      className="w-8 h-8 rounded-full"
-                      style={{ backgroundColor: swatch }}
-                    />
+                    <span className="opacity-0">{swatch}</span> {/* For accessibility */}
                   </ColorSwatch>
                 ))}
               </div>
-            </div>
-            <div className="flex-1 mb-8 md:mb-0">
-              <h3 className="text-xl font-semibold mb-4">Brush & Eraser</h3>
-              <div className="flex items-center space-x-4 mb-4">
-                <Button
-                  onClick={() => setEraserActive(false)}
-                  className={`flex items-center space-x-2 py-2 px-4 rounded-lg shadow-md ${
-                    !eraserActive ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'
-                  } transition-colors hover:bg-blue-600`}
-                >
-                  <Brush className="w-5 h-5" />
-                  <span>Brush</span>
-                </Button>
-                <Button
-                  onClick={() => setEraserActive(true)}
-                  className={`flex items-center space-x-2 py-2 px-4 rounded-lg shadow-md ${
-                    eraserActive ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-800'
-                  } transition-colors hover:bg-red-600`}
-                >
-                  <Eraser className="w-5 h-5" />
-                  <span>Eraser</span>
-                </Button>
-              </div>
-              <div className="mb-4">
-                <label className="block text-gray-700 font-semibold mb-2">Brush Size</label>
+              <div className="flex items-center mt-4">
+                <label className="mr-4">Brush Size:</label>
                 <input
                   type="range"
                   min="1"
-                  max="30"
+                  max="100"
                   value={brushSize}
                   onChange={(e) => setBrushSize(Number(e.target.value))}
                   className="w-full"
                 />
+                <span className="ml-2">{brushSize}</span>
               </div>
-              <div>
-                <label className="block text-gray-700 font-semibold mb-2">Eraser Size</label>
+              <div className="flex items-center mt-4">
+                <label className="mr-4">Eraser Size:</label>
                 <input
                   type="range"
-                  min="10"
+                  min="1"
                   max="100"
                   value={eraserSize}
                   onChange={(e) => setEraserSize(Number(e.target.value))}
                   className="w-full"
                 />
+                <span className="ml-2">{eraserSize}</span>
+              </div>
+            </div>
+            <div className="flex-1">
+              <h3 className="text-xl font-semibold mb-4">Tools</h3>
+              <div className="flex flex-col">
+                <Button onClick={() => setEraserActive(false)} className="mb-2">
+                  <Brush className="mr-2" />
+                  Brush
+                </Button>
+                <Button onClick={() => { setEraserActive(true); setColor('#FFFFFF'); }} className="mb-2">
+                  <Eraser className="mr-2" />
+                  Eraser
+                </Button>
+                <Button onClick={resetCanvas} className="mb-2 bg-red-500 hover:bg-red-700">
+                  Reset Canvas
+                </Button>
+                <Button onClick={runRoute} className="bg-green-500 hover:bg-green-700">
+                  Run
+                </Button>
               </div>
             </div>
           </div>
         </div>
       </motion.section>
       {/* Canvas Section */}
-      <section className="flex-1 flex items-center justify-center p-4">
-        <canvas
-          ref={canvasRef}
-          className="border border-gray-300 bg-white"
-          onMouseDown={startDrawing}
-          onMouseMove={draw}
-          onMouseUp={stopDrawing}
-          onMouseOut={stopDrawing}
-        />
-      </section>
-      {/* Controls and Results Section */}
       <motion.section
-        id="controls-section"
-        className="bg-gray-200 py-8"
+        id="canvas-section"
+        className="flex justify-center items-center py-8"
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7 }}
       >
-        <div className="container mx-auto text-center">
-          <div className="flex justify-center mb-6">
-            <Button
-              onClick={() => setReset(true)}
-              className="bg-red-500 text-white px-6 py-3 rounded-lg shadow-md hover:bg-red-600 transition-colors"
-            >
-              Reset
-            </Button>
-            <Button
-              onClick={runRoute}
-              className="bg-green-500 text-white px-6 py-3 rounded-lg shadow-md hover:bg-green-600 transition-colors ml-4"
-            >
-              Run
-            </Button>
-          </div>
-          {result && (
-            <div className="bg-white p-6 rounded-lg shadow-md mx-4">
-              <h3 className="text-2xl font-semibold mb-4">Results</h3>
-              <div className="text-lg">
-                <p>
-                  <strong>Expression:</strong> {result.expression}
-                </p>
-                <p>
-                  <strong>Answer:</strong> {result.answer}
-                </p>
+        <canvas
+          ref={canvasRef}
+          className="border border-gray-400"
+          onMouseDown={startDrawing}
+          onMouseMove={draw}
+          onMouseUp={stopDrawing}
+          onMouseLeave={stopDrawing}
+        />
+      </motion.section>
+      {/* Results Section */}
+      <motion.section
+        id="results-section"
+        className="py-16 bg-gray-200"
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7 }}
+      >
+        <div className="container mx-auto">
+          <h2 className="text-3xl font-semibold mb-6 text-center">Results</h2>
+          <div className="text-center">
+            {result && (
+              <div>
+                <h3 className="text-xl font-semibold mb-2">{result.expression}</h3>
+                <p className="text-lg">{result.answer}</p>
               </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </motion.section>
     </div>

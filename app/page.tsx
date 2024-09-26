@@ -82,7 +82,7 @@ export default function Home() {
     }
   }, [reset]);
   const renderLatexToCanvas = (expression: string, answer: string) => {
-    const latex = \\(\\LARGE{${expression} = ${answer}}\\);
+    const latex = `\\(\\LARGE{${expression} = ${answer}}\\)`;
     setLatexExpression([...latexExpression, latex]);
     const canvas = canvasRef.current;
     if (canvas) {
@@ -135,7 +135,7 @@ export default function Home() {
       const canvas = canvasRef.current;
       if (canvas) {
         const response = await axios.post(
-          ${process.env.NEXT_PUBLIC_API_URL}/calculate,
+          `${process.env.NEXT_PUBLIC_API_URL}/calculate`,
           {
             image: canvas.toDataURL('image/png'),
             dict_of_vars: dictOfVars
@@ -220,7 +220,7 @@ export default function Home() {
                       setColor(swatch);
                       setEraserActive(false); 
                     }}
-                    style={{                     cursor: 'pointer', border: 2px solid ${color === swatch ? '#000' : '#fff'} }}
+                    style={{                     cursor: 'pointer', border: `2px solid ${color === swatch ? '#000' : '#fff'}` }}
                     className="rounded-full h-12 w-12 flex items-center justify-center shadow-md transition-transform transform hover:scale-105"
                   >
                     <div
@@ -236,18 +236,18 @@ export default function Home() {
               <div className="flex items-center space-x-4 mb-4">
                 <Button
                   onClick={() => setEraserActive(false)}
-                  className={flex items-center space-x-2 py-2 px-4 rounded-lg shadow-md ${
+                  className={`flex items-center space-x-2 py-2 px-4 rounded-lg shadow-md ${
                     !eraserActive ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'
-                  } transition-colors hover:bg-blue-600}
+                  } transition-colors hover:bg-blue-600`}
                 >
                   <Brush className="w-5 h-5" />
                   <span>Brush</span>
                 </Button>
                 <Button
                   onClick={() => setEraserActive(true)}
-                  className={flex items-center space-x-2 py-2 px-4 rounded-lg shadow-md ${
+                  className={`flex items-center space-x-2 py-2 px-4 rounded-lg shadow-md ${
                     eraserActive ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-800'
-                  } transition-colors hover:bg-red-600}
+                  } transition-colors hover:bg-red-600`}
                 >
                   <Eraser className="w-5 h-5" />
                   <span>Eraser</span>

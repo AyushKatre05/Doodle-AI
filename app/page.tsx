@@ -1,24 +1,19 @@
-
 "use client";
-
 import { ColorSwatch } from '@mantine/core';
 import { Button } from '@/components/ui/button';
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { Brush, Eraser } from 'lucide-react'; 
-
 const SWATCHES = [
   "#000000", "#ee3333", "#e64980", "#be4bdb",
   "#893200", "#228be6", "#3333ee", "#40c057", "#00aa00",
   "#fab005", "#fd7e14",
 ];
-
 interface GeneratedResult {
   expression: string;
   answer: string;
 }
-
 interface Response {
   expr: string;
   result: string;
@@ -37,7 +32,6 @@ export default function Home() {
   const [latexPosition, setLatexPosition] = useState({ x: 10, y: 200 });
   const [latexExpression, setLatexExpression] = useState<Array<string>>([]);
   const [eraserActive, setEraserActive] = useState(false); // Track eraser state
-
   useEffect(() => {
     const canvas = canvasRef.current;
     const setCanvasSize = () => {
@@ -50,18 +44,15 @@ export default function Home() {
     };
     window.addEventListener('resize', setCanvasSize);
     setCanvasSize();
-
     return () => {
       window.removeEventListener('resize', setCanvasSize);
     };
   }, []);
-
   useEffect(() => {
     const script = document.createElement('script');
     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-MML-AM_CHTML';
     script.async = true;
     document.head.appendChild(script);
-
     script.onload = () => {
       window.MathJax.Hub.Config({
         tex2jax: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
@@ -72,18 +63,15 @@ export default function Home() {
         }, 0);
       }
     };
-
     return () => {
       document.head.removeChild(script);
     };
   }, [latexExpression]);
-
   useEffect(() => {
     if (result) {
       renderLatexToCanvas(result.expression, result.answer);
     }
   }, [result]);
-
   useEffect(() => {
     if (reset) {
       resetCanvas();
@@ -93,11 +81,9 @@ export default function Home() {
       setReset(false);
     }
   }, [reset]);
-
   const renderLatexToCanvas = (expression: string, answer: string) => {
-    const latex = \\(\\LARGE{${expression} = ${answer}}\\);
+    const latex = `\\(\\LARGE{${expression} = ${answer}}\\)`;
     setLatexExpression([...latexExpression, latex]);
-
     const canvas = canvasRef.current;
     if (canvas) {
       const ctx = canvas.getContext('2d');
@@ -106,7 +92,6 @@ export default function Home() {
       }
     }
   };
-
   const resetCanvas = () => {
     const canvas = canvasRef.current;
     if (canvas) {
@@ -116,7 +101,6 @@ export default function Home() {
       }
     }
   };
-
   const startDrawing = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const canvas = canvasRef.current;
     if (canvas) {
@@ -132,10 +116,8 @@ export default function Home() {
       }
     }
   };
-
   const draw = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!isDrawing) return;
-
     const canvas = canvasRef.current;
     if (canvas) {
       const ctx = canvas.getContext('2d');
@@ -145,26 +127,22 @@ export default function Home() {
       }
     }
   };
-
   const stopDrawing = () => {
     setIsDrawing(false);
   };
-
   const runRoute = async () => {
     try {
       const canvas = canvasRef.current;
       if (canvas) {
         const response = await axios.post(
-          ${process.env.NEXT_PUBLIC_API_URL}/calculate,
+          `${process.env.NEXT_PUBLIC_API_URL}/calculate`,
           {
             image: canvas.toDataURL('image/png'),
             dict_of_vars: dictOfVars
           }
         );
-
         const resp = await response.data;
         console.log('Response', resp);
-
         if (resp.data && Array.isArray(resp.data)) {
           resp.data.forEach((data: Response) => {
             if (data.assign === true) {
@@ -174,11 +152,9 @@ export default function Home() {
               });
             }
           });
-
           const ctx = canvas.getContext('2d');
           const imageData = ctx!.getImageData(0, 0, canvas.width, canvas.height);
           let minX = canvas.width, minY = canvas.height, maxX = 0, maxY = 0;
-
           for (let y = 0; y < canvas.height; y++) {
             for (let x = 0; x < canvas.width; x++) {
               const i = (y * canvas.width + x) * 4;
@@ -190,10 +166,8 @@ export default function Home() {
               }
             }
           }
-
           const centerX = (minX + maxX) / 2;
           const centerY = (minY + maxY) / 2;
-
           setLatexPosition({ x: centerX, y: centerY });
           resp.data.forEach((data: Response) => {
             setTimeout(() => {
@@ -209,7 +183,6 @@ export default function Home() {
       console.error("Error running route:", error);
     }
   };
-
   return (
     <div className="relative min-h-screen bg-gray-100">
       {/* Header */}
@@ -222,9 +195,9 @@ export default function Home() {
         <div className="container mx-auto flex flex-col md:flex-row justify-between items-center">
           <h1 className="text-4xl font-bold">Drawing & Calculation Tool</h1>
           <p className="text-lg mt-2 md:mt-0">Create drawings, perform calculations, and see results instantly!</p>
+          {/* <ModeToggle/> */}
         </div>
       </motion.header>
-
       {/* Tools Section */}
       <motion.section
         id="tools-section"
@@ -247,7 +220,7 @@ export default function Home() {
                       setColor(swatch);
                       setEraserActive(false); 
                     }}
-                    style={{                     cursor: 'pointer', border: 2px solid ${color === swatch ? '#000' : '#fff'} }}
+                    style={{                     cursor: 'pointer', border: `2px solid ${color === swatch ? '#000' : '#fff'}` }}
                     className="rounded-full h-12 w-12 flex items-center justify-center shadow-md transition-transform transform hover:scale-105"
                   >
                     <div
@@ -258,30 +231,28 @@ export default function Home() {
                 ))}
               </div>
             </div>
-
             <div className="flex-1 mb-8 md:mb-0">
               <h3 className="text-xl font-semibold mb-4">Brush & Eraser</h3>
               <div className="flex items-center space-x-4 mb-4">
                 <Button
                   onClick={() => setEraserActive(false)}
-                  className={flex items-center space-x-2 py-2 px-4 rounded-lg shadow-md ${
+                  className={`flex items-center space-x-2 py-2 px-4 rounded-lg shadow-md ${
                     !eraserActive ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-800'
-                  } transition-colors hover:bg-blue-600}
+                  } transition-colors hover:bg-blue-600`}
                 >
                   <Brush className="w-5 h-5" />
                   <span>Brush</span>
                 </Button>
                 <Button
                   onClick={() => setEraserActive(true)}
-                  className={flex items-center space-x-2 py-2 px-4 rounded-lg shadow-md ${
+                  className={`flex items-center space-x-2 py-2 px-4 rounded-lg shadow-md ${
                     eraserActive ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-800'
-                  } transition-colors hover:bg-red-600}
+                  } transition-colors hover:bg-red-600`}
                 >
                   <Eraser className="w-5 h-5" />
                   <span>Eraser</span>
                 </Button>
               </div>
-
               <div className="mb-4">
                 <label className="block text-gray-700 font-semibold mb-2">Brush Size</label>
                 <input
@@ -293,7 +264,6 @@ export default function Home() {
                   className="w-full"
                 />
               </div>
-
               <div>
                 <label className="block text-gray-700 font-semibold mb-2">Eraser Size</label>
                 <input
@@ -309,7 +279,6 @@ export default function Home() {
           </div>
         </div>
       </motion.section>
-
       {/* Canvas Section */}
       <section className="flex-1 flex items-center justify-center p-4">
         <canvas
@@ -321,7 +290,6 @@ export default function Home() {
           onMouseOut={stopDrawing}
         />
       </section>
-
       {/* Controls and Results Section */}
       <motion.section
         id="controls-section"
@@ -345,7 +313,6 @@ export default function Home() {
               Run
             </Button>
           </div>
-
           {result && (
             <div className="bg-white p-6 rounded-lg shadow-md mx-4">
               <h3 className="text-2xl font-semibold mb-4">Results</h3>

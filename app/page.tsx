@@ -220,9 +220,9 @@ export default function Home() {
         </motion.div>
 
         <div className="mt-5">
-          <ColorSwatch
+        <ColorSwatch
             color={color}
-            onChange={setColor}
+            onChange={(newColor) => setColor(newColor)} // Ensure newColor is the expected value
             swatches={SWATCHES}
             fullWidth
             size="lg"

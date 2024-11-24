@@ -6,7 +6,7 @@ import axios from 'axios';
 import { motion } from 'framer-motion';
 import { Brush, Eraser } from 'lucide-react'; 
 const SWATCHES = [
-  "#000000", "#ee3333", "#e64980", "#be4bdb",
+  "#ee3333", "#e64980", "#be4bdb",
   "#893200", "#228be6", "#3333ee", "#40c057", "#00aa00",
   "#fab005", "#fd7e14",
 ];
